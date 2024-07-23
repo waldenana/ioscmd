@@ -16,12 +16,12 @@ ssh_client = None
 
 
 @click.group()
-@click.option('--host', "-h", default="", help='ssh host')
+@click.option('--ip', "-i", default="", help='ssh host ip')
 @click.option('--port', "-p", default="22", help='ssh port')
 @click.option('--udid', "-u", default="", help='specify unique device identifier')
-def main(host, port, udid):
+def main(ip, port, udid):
     local_port = port
-    ssh_host = host
+    ssh_host = ip
     if not ssh_host:
         relay = RelayService(udid, port)
         local_port = relay.start()
