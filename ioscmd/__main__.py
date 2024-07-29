@@ -1,5 +1,4 @@
 # 这是一个示例 Python 脚本。
-import logging
 import os
 import sys
 import time
@@ -8,10 +7,6 @@ import warnings
 import click
 
 from ioscmd.relay import RelayService
-
-warnings.filterwarnings('ignore')
-
-logger = logging.getLogger(__name__)
 ssh_client = None
 
 
@@ -63,7 +58,7 @@ def push(local, remote):
                 file_path = os.path.join(local_file, file)
                 _listdir(file_path, os.path.join(remote_path, file))
         else:
-            logger.info(f"upload file {local_file} to {remote_path}")
+            print(f"upload file {local_file} to {remote_path}")
             sftp.put(local_file, remote_path)
 
     _listdir(local, remote)
@@ -78,7 +73,7 @@ def _shell(cmd):
         line = stdout.readline()
         if not line:
             break
-        print(line)
+        print(line.rstrip(), end="")
 
 
 @click.command(context_settings={"ignore_unknown_options": True})
