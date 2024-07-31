@@ -8,6 +8,7 @@ import click
 
 from ioscmd.relay import RelayService
 ssh_client = None
+relay: Optional[RelayService] = None
 
 
 @click.group()
@@ -18,6 +19,7 @@ def main(ip, port, udid):
     local_port = port
     ssh_host = ip
     if not ssh_host:
+        global relay
         relay = RelayService(udid, port)
         local_port = relay.start()
         ssh_host = "127.0.0.1"
@@ -90,4 +92,6 @@ main.add_command(shell)
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
+    if relay is not None:
+        relay.stop()
     sys.exit()
