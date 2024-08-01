@@ -44,6 +44,8 @@ def install(deb):
     sftp.put(deb, "/tmp/_ios_install.deb")
     _shell("dpkg -i /tmp/_ios_install.deb")
     _shell("apt-get -f -y install")
+    if relay is not None:
+        relay.stop()
 
 
 @click.command()
@@ -69,6 +71,8 @@ def push(local, remote):
     _listdir(local, remote)
     sftp.close()
     ssh_client.close()
+    if relay is not None:
+        relay.stop()
 
 
 def _shell(cmd):
@@ -84,8 +88,9 @@ def _shell(cmd):
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.argument("cmd", nargs=-1, required=True)
 def shell(cmd):
-    print(cmd)
     _shell(" ".join(cmd))
+    if relay is not None:
+        relay.stop()
 
 
 main.add_command(install)
@@ -95,6 +100,3 @@ main.add_command(shell)
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     main()
-    if relay is not None:
-        relay.stop()
-    sys.exit()
