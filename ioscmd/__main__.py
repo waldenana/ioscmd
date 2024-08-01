@@ -4,9 +4,12 @@ import sys
 import time
 from pathlib import Path
 import warnings
+from typing import Optional
+
 import click
 
 from ioscmd.relay import RelayService
+
 ssh_client = None
 relay: Optional[RelayService] = None
 
