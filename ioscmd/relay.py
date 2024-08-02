@@ -42,6 +42,6 @@ class RelayService:
         self._proc = proc
         return available
 
-    async def stop(self):
+    def stop(self):
         if self._proc:
             self._proc.terminate()

@@ -1,17 +1,13 @@
 # 这是一个示例 Python 脚本。
 import os
-import sys
-import time
-from pathlib import Path
 import warnings
-from typing import Optional
+from pathlib import Path
 
 import click
 
-from ioscmd.relay import RelayService
+warnings.filterwarnings(action='ignore', module='.*paramiko.*')
 
 ssh_client = None
-relay: Optional[RelayService] = None
 
 
 @click.group()
@@ -21,18 +17,17 @@ relay: Optional[RelayService] = None
 def main(ip, port, udid):
     local_port = port
     ssh_host = ip
-    if not ssh_host:
-        global relay
-        relay = RelayService(udid, port)
-        local_port = relay.start()
-        ssh_host = "127.0.0.1"
-        time.sleep(2)
-
-    import paramiko
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    if ssh_host is None:
+        ssh_host = udid
+    if ssh_host is None:
+        raise ValueError('ssh host or udid must be specified')
+    from ssh import SSH, AuthenticationException
+    client = SSH()
     # 连接SSH服务端，以用户名和密码进行认证
-    client.connect(hostname=ssh_host, port=local_port, username='root', password='alpine')
+    try:
+        client.connect(hostname=ssh_host, port=local_port, username='root', password='alpine')
+    except AuthenticationException:
+        raise click.ClickException('SSH connection failed')
     global ssh_client
     ssh_client = client
 
@@ -44,8 +39,8 @@ def install(deb):
     sftp.put(deb, "/tmp/_ios_install.deb")
     _shell("dpkg -i /tmp/_ios_install.deb")
     _shell("apt-get -f -y install")
-    if relay is not None:
-        relay.stop()
+    sftp.close()
+    ssh_client.close()
 
 
 @click.command()
@@ -71,8 +66,6 @@ def push(local, remote):
     _listdir(local, remote)
     sftp.close()
     ssh_client.close()
-    if relay is not None:
-        relay.stop()
 
 
 def _shell(cmd):
@@ -89,13 +82,19 @@ def _shell(cmd):
 @click.argument("cmd", nargs=-1, required=True)
 def shell(cmd):
     _shell(" ".join(cmd))
-    if relay is not None:
-        relay.stop()
+    ssh_client.close()
+
+
+@click.command()
+def ssh():
+    ssh_client()
+    ssh_client.close()
 
 
 main.add_command(install)
 main.add_command(push)
 main.add_command(shell)
+main.add_command(ssh)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
