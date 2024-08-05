@@ -80,10 +80,15 @@ main.add_command(push)
 main.add_command(shell)
 main.add_command(ssh)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
+
+def __main__():
     from .ssh import SSH
 
     ssh_client = SSH()
     main(standalone_mode=False)
     ssh_client.close()
+
+
+# Press the green button in the gutter to run the script.
+if __name__ == '__main__':
+    __main__()
