@@ -7,6 +7,7 @@ import click
 from click import ClickException
 
 warnings.filterwarnings(action='ignore', module='.*paramiko.*')
+ssh_client = None
 
 
 @click.group()
@@ -83,7 +84,7 @@ main.add_command(ssh)
 
 def __main__():
     from .ssh import SSH
-
+    global ssh_client
     ssh_client = SSH()
     main(standalone_mode=False)
     ssh_client.close()
