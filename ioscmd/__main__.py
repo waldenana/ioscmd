@@ -4,32 +4,22 @@ import warnings
 from pathlib import Path
 
 import click
+from click import ClickException
 
 warnings.filterwarnings(action='ignore', module='.*paramiko.*')
 
-ssh_client = None
-
 
 @click.group()
-@click.option('--ip', "-i", default="", help='ssh host ip')
+@click.option('--ip', "-i", default=None, help='ssh host ip')
 @click.option('--port', "-p", default="22", help='ssh port')
-@click.option('--udid', "-u", default="", help='specify unique device identifier')
+@click.option('--udid', "-u", default=None, help='specify unique device identifier')
 def main(ip, port, udid):
     local_port = port
-    ssh_host = ip
-    if ssh_host is None:
-        ssh_host = udid
-    if ssh_host is None:
-        raise ValueError('ssh host or udid must be specified')
-    from ssh import SSH, AuthenticationException
-    client = SSH()
     # 连接SSH服务端，以用户名和密码进行认证
     try:
-        client.connect(hostname=ssh_host, port=local_port, username='root', password='alpine')
-    except AuthenticationException:
-        raise click.ClickException('SSH connection failed')
-    global ssh_client
-    ssh_client = client
+        ssh_client.connect(hostname=ip if ip else udid, port=local_port, username='root', password='alpine')
+    except Exception as e:
+        raise ClickException(str(e))
 
 
 @click.command()
@@ -39,8 +29,6 @@ def install(deb):
     sftp.put(deb, "/tmp/_ios_install.deb")
     _shell("dpkg -i /tmp/_ios_install.deb")
     _shell("apt-get -f -y install")
-    sftp.close()
-    ssh_client.close()
 
 
 @click.command()
@@ -64,8 +52,6 @@ def push(local, remote):
             sftp.put(local_file, remote_path)
 
     _listdir(local, remote)
-    sftp.close()
-    ssh_client.close()
 
 
 def _shell(cmd):
@@ -82,13 +68,11 @@ def _shell(cmd):
 @click.argument("cmd", nargs=-1, required=True)
 def shell(cmd):
     _shell(" ".join(cmd))
-    ssh_client.close()
 
 
 @click.command()
 def ssh():
     ssh_client()
-    ssh_client.close()
 
 
 main.add_command(install)
@@ -98,4 +82,8 @@ main.add_command(ssh)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    main()
+    from .ssh import SSH
+
+    ssh_client = SSH()
+    main(standalone_mode=False)
+    ssh_client.close()

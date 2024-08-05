@@ -9,7 +9,6 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.6"
 click = "*"
-tidevice = "^0.12.10"
 paramiko = "*"
 
 
