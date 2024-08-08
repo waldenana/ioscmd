@@ -34,6 +34,6 @@ def ssh_client(func):
     return update_wrapper(new_func, func)
 
 
-CLI_GROUPS = ["ssh", "install", "upload", "devices", "shell"]
+CLI_GROUPS = ["ssh", "install", "upload", "devices", "shell", "pull"]
 for group in CLI_GROUPS:
     __import__(f"ioscmd.command.{group}")
