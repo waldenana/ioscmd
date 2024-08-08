@@ -10,8 +10,8 @@ import tty
 import paramiko
 from paramiko.config import SSH_PORT
 
-from .exceptions import AuthenticationException
-from .relay import Usbmux
+from ioscmd.exceptions import AuthenticationException
+from ioscmd.sockets import Usbmux
 
 
 def resize_pty(channel):
@@ -34,9 +34,11 @@ class SSH(paramiko.SSHClient):
     def __del__(self):
         self.close()
 
-    def close(self):
-        print("closed ssh connection")
-        super().close()
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()
 
     def connect(
             self,

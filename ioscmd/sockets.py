@@ -355,3 +355,23 @@ class Usbmux:
         _check(data)
         logger.debug("connected to port: %d", _port)
         return conn
+
+    def get_deviceInfo(self, devid: int) -> dict:
+        request = {
+            "Request": "GetValue",
+            "Label": PROGRAM_NAME,
+        }
+        with self.connect_device_port(devid, 0xf27e) as s:
+            ret = s.send_recv_packet(request)
+            return ret['Value']
+    #
+    # def get_serial(self, devid: int) -> str:
+    #     request = {
+    #         "Request": "GetValue",
+    #         "Label": PROGRAM_NAME,
+    #         "Key": "SerialNumber",
+    #     }
+    #     with self.connect_device_port(devid, 0xf27e) as s:
+    #         ret = s.send_recv_packet(request)
+    #         print(ret)
+    #         return ret['Value']
