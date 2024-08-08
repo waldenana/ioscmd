@@ -25,7 +25,7 @@ def set_socket_timeout(conn: typing.Union[typing.Callable[..., socket.socket], s
             pass
 
 
-def unicode_len(s: str) -> int:
+def unicode_len(s) -> int:
     """ printable length of string """
     length = 0
     for char in s:
@@ -36,12 +36,12 @@ def unicode_len(s: str) -> int:
     return length
 
 
-def ljust(s, length: int):
+def ljust(s, length):
     s = str(s)
     return s + ' ' * (length - unicode_len(s))
 
 
-def print_dict_as_table(dict_values: list[dict], headers: list[str], sep: str = "\t"):
+def print_dict_as_table(dict_values, headers, sep="\t"):
     """
     Output as format
     ----------------------------------------

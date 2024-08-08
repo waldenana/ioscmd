@@ -1,2 +1,2 @@
-click==8.1.7
+click
 paramiko~=3.4.0
