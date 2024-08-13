@@ -298,7 +298,7 @@ class Usbmux:
         return list(result.values())
 
     def device_udid_list(self) -> typing.List[str]:
-        return [d['Identifier'] for d in self.device_list()]
+        return [d['UDID'] for d in self.device_list()]
 
     def read_system_BUID(self) -> str:
         """ BUID is always same """
@@ -375,3 +375,4 @@ class Usbmux:
     #         ret = s.send_recv_packet(request)
     #         print(ret)
     #         return ret['Value']
+
