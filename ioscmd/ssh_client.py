@@ -103,8 +103,8 @@ class SSH(paramiko.SSHClient):
                     if len(result) == 0:
                         break
                     # 输出到屏幕
-                    sys.stdout.write(result.decode())
-                    sys.stdout.flush()
+                    sys.stdout.buffer.write(result)
+                    sys.stdout.buffer.flush()
         finally:
             # 执行完后将现在的终端属性恢复为原操作终端属性
             termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, oldtty_attrs)

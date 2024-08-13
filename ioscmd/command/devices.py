@@ -1,10 +1,5 @@
-from pathlib import Path
-
-import click
-
-from ioscmd.command.cli import cli, ssh_client
+from ioscmd.command.cli import cli
 from ioscmd.sockets import Usbmux
-from ioscmd.ssh_client import SSH
 from ioscmd.utils import print_dict_as_table
 
 
